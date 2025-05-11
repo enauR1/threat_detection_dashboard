@@ -81,3 +81,4 @@ with open(output_file_path, 'w') as output_file:
     json.dump(results, output_file, indent=2)
 
 print("\n✅ Log analysis complete. Results saved to:", output_file_path)
+print("\n✅ Log analysis complete. Results saved to:", output_file_path)
