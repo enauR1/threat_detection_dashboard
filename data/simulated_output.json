@@ -68,5 +68,117 @@
     "threat_type": "unauthorized FTP access",
     "severity": 6,
     "recommended_action": "Disable FTP if unused and block suspicious IPs"
+  },
+  {
+    "log": "[2025-05-11 21:30:36] SRC=94.194.222.223 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=unauthorized FTP access",
+    "suspicious": true,
+    "threat_type": "unauthorized FTP access",
+    "severity": 6,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:30:51] SRC=184.213.102.81 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=reconnaissance (SNMP scan)",
+    "suspicious": true,
+    "threat_type": "reconnaissance (SNMP scan)",
+    "severity": 5,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:31:06] SRC=66.106.29.80 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=internal reconnaissance (SMB)",
+    "suspicious": true,
+    "threat_type": "internal reconnaissance (SMB)",
+    "severity": 7,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:31:21] SRC=210.88.23.90 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=reconnaissance (SNMP scan)",
+    "suspicious": true,
+    "threat_type": "reconnaissance (SNMP scan)",
+    "severity": 5,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:31:36] SRC=116.121.203.248 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=reconnaissance (SNMP scan)",
+    "suspicious": true,
+    "threat_type": "reconnaissance (SNMP scan)",
+    "severity": 5,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:31:51] SRC=151.142.47.165 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=benign HTTP traffic",
+    "suspicious": false,
+    "threat_type": "benign HTTP traffic",
+    "severity": 0,
+    "recommended_action": "No action needed"
+  },
+  {
+    "log": "[2025-05-11 21:32:06] SRC=202.93.191.195 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=internal reconnaissance (SMB)",
+    "suspicious": true,
+    "threat_type": "internal reconnaissance (SMB)",
+    "severity": 7,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:32:21] SRC=31.192.192.156 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=reconnaissance (SNMP scan)",
+    "suspicious": true,
+    "threat_type": "reconnaissance (SNMP scan)",
+    "severity": 5,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:32:36] SRC=167.108.22.168 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=benign HTTP traffic",
+    "suspicious": false,
+    "threat_type": "benign HTTP traffic",
+    "severity": 0,
+    "recommended_action": "No action needed"
+  },
+  {
+    "log": "[2025-05-11 21:32:51] SRC=172.170.87.216 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=reconnaissance (SNMP scan)",
+    "suspicious": true,
+    "threat_type": "reconnaissance (SNMP scan)",
+    "severity": 5,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:33:06] SRC=135.96.73.167 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=reconnaissance (SNMP scan)",
+    "suspicious": true,
+    "threat_type": "reconnaissance (SNMP scan)",
+    "severity": 5,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:33:21] SRC=31.209.8.79 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=brute-force attack (SSH)",
+    "suspicious": true,
+    "threat_type": "brute-force attack (SSH)",
+    "severity": 8,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:34:04] SRC=241.135.30.211 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=benign HTTP traffic",
+    "suspicious": false,
+    "threat_type": "benign HTTP traffic",
+    "severity": 0,
+    "recommended_action": "No action needed"
+  },
+  {
+    "log": "[2025-05-11 21:34:19] SRC=54.53.64.180 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=unauthorized FTP access",
+    "suspicious": true,
+    "threat_type": "unauthorized FTP access",
+    "severity": 6,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:34:34] SRC=230.25.73.217 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=brute-force attack (SSH)",
+    "suspicious": true,
+    "threat_type": "brute-force attack (SSH)",
+    "severity": 8,
+    "recommended_action": "Investigate"
+  },
+  {
+    "log": "[2025-05-11 21:34:49] SRC=241.17.7.41 DST=10.0.0.1 PROTO=TCP DPT=22 ACTION=DROP MSG=brute-force attack (SSH)",
+    "suspicious": true,
+    "threat_type": "brute-force attack (SSH)",
+    "severity": 8,
+    "recommended_action": "Investigate"
   }
 ]
