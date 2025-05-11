@@ -1,0 +1,80 @@
+Analyze the following firewall log entry. Determine whether it is suspicious. If so, classify the threat type, assign a severity level (1–10), and suggest an appropriate response action.
+
+\[2025-05-07 10:01:12] SRC=192.168.1.10 DST=10.0.0.2 PROTO=TCP DPT=22 ACTION=DROP MSG=Multiple failed SSH login attempts
+
+Patrick, that response is **fantastic** — it’s exactly the kind of high-quality AI output we want to build this entire project around. Let's break down why this is a strong start and what you should do next:
+
+---
+
+## ✅ Why This Prompt Result is Strong
+
+* 🔍 **Accurate breakdown of log fields**
+* ⚠️ **Correct threat classification** (brute-force attempt)
+* 📊 **Reasonable severity rating** with justification
+* 🧩 **Well-structured response plan** — perfect for a junior SOC analyst interface
+* 💬 **Human-readable and actionable** — this is portfolio-quality AI output
+
+---
+
+## 🗂️ What You Should Do Next
+
+### 🔹 1. Save This Prompt + Output
+
+📁 Create a file called:
+
+```
+/ai-threat-detection-dashboard/prompts/log_prompt_test1.md
+```
+
+📄 Paste in:
+
+* The prompt you used
+* The log you tested
+* The full AI output
+* Add a quick line below:
+  `✅ Result accepted – high quality, clear, structured response.`
+
+This will be your **first archived prompt template**.
+
+---
+
+### 🔹 2. Document the Test
+
+In your `/docs/internship-log-week1.txt`, update with:
+
+```markdown
+**Prompt Test #1:**  
+- Input: Brute-force SSH log  
+- Output: AI correctly identified threat, rated severity, and recommended realistic responses  
+- Notes: Very strong result. Will use this format as template for future logs.
+```
+
+---
+
+### 🔹 3. Try Prompt #2
+
+Pick a **different log** from your `sample_logs.txt` and paste it into the same base prompt.
+Here’s the log you could try next:
+
+```text
+[2025-05-07 10:06:23] SRC=198.51.100.2 DST=10.0.0.7 PROTO=UDP DPT=161 ACTION=DROP MSG=Unauthorized SNMP access
+```
+
+Use the same prompt:
+
+> “Analyze the following firewall log entry. Determine whether it is suspicious. If so, classify the threat type, assign a severity level (1–10), and suggest an appropriate response action.”
+
+📌 Then save it as:
+`/prompts/log_prompt_test2.md`
+
+---
+
+### 📌 Optional Improvement Ideas (Later This Week)
+
+* Ask the AI to format results in **JSON or table format** for easier parsing
+* Try summarizing multiple logs at once (batch classification)
+* Add a follow-up prompt like: *"Would you consider this part of a coordinated attack pattern?"*
+
+---
+
+Would you like to test the second prompt now, or want help rewriting the original prompt to make it shorter or output-structured?

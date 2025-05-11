@@ -1,0 +1,72 @@
+[
+    {
+        "log": "[2025-05-08 14:12:11] SRC=45.33.12.101 DST=10.0.0.3 PROTO=TCP DPT=23 ACTION=DROP MSG=Telnet connection attempt blocked",
+        "suspicious": true,
+        "threat_type": "unauthorized access attempt via Telnet",
+        "severity": 6,
+        "recommended_action": "Continue blocking Telnet traffic and monitor source IP for repeated attempts"
+    },
+    {
+        "log": "[2025-05-08 14:14:45] SRC=198.51.100.22 DST=10.0.0.7 PROTO=UDP DPT=161 ACTION=DROP MSG=Unauthorized SNMP query",
+        "suspicious": true,
+        "threat_type": "reconnaissance - SNMP scanning",
+        "severity": 5,
+        "recommended_action": "Block and monitor source IP for further scanning activity"
+    },
+    {
+        "log": "[2025-05-08 14:16:02] SRC=203.0.113.9 DST=10.0.0.5 PROTO=TCP DPT=80 ACTION=ACCEPT MSG=Standard HTTP web traffic",
+        "suspicious": false,
+        "threat_type": "benign",
+        "severity": 0,
+        "recommended_action": "No action needed; normal web traffic"
+    },
+    {
+        "log": "[2025-05-08 14:17:23] SRC=192.168.1.25 DST=10.0.0.4 PROTO=TCP DPT=445 ACTION=DROP MSG=Suspicious SMB probe attempt",
+        "suspicious": true,
+        "threat_type": "internal reconnaissance / lateral movement attempt",
+        "severity": 7,
+        "recommended_action": "Investigate internal host 192.168.1.25 for signs of compromise"
+    },
+    {
+        "log": "[2025-05-08 14:19:37] SRC=77.88.55.44 DST=10.0.0.2 PROTO=UDP DPT=53 ACTION=ACCEPT MSG=DNS resolution request",
+        "suspicious": false,
+        "threat_type": "benign",
+        "severity": 0,
+        "recommended_action": "No action needed; typical DNS traffic"
+    },
+    {
+        "log": "[2025-05-08 14:21:50] SRC=142.250.72.14 DST=10.0.0.1 PROTO=TCP DPT=443 ACTION=ACCEPT MSG=HTTPS session established",
+        "suspicious": false,
+        "threat_type": "benign",
+        "severity": 0,
+        "recommended_action": "No action needed; legitimate HTTPS connection"
+    },
+    {
+        "log": "[2025-05-08 14:23:11] SRC=185.199.110.153 DST=10.0.0.3 PROTO=TCP DPT=22 ACTION=DROP MSG=Repeated failed SSH login attempts",
+        "suspicious": true,
+        "threat_type": "brute-force attack",
+        "severity": 8,
+        "recommended_action": "Blacklist IP and enable rate-limiting or fail2ban on SSH"
+    },
+    {
+        "log": "[2025-05-08 14:25:04] SRC=100.64.32.12 DST=10.0.0.7 PROTO=TCP DPT=3389 ACTION=DROP MSG=RDP brute force suspected",
+        "suspicious": true,
+        "threat_type": "brute-force attack",
+        "severity": 9,
+        "recommended_action": "Block IP, check endpoint logs, and enable RDP protection or MFA"
+    },
+    {
+        "log": "[2025-05-08 14:26:58] SRC=172.217.3.110 DST=10.0.0.6 PROTO=TCP DPT=80 ACTION=ACCEPT MSG=Googlebot web crawl",
+        "suspicious": false,
+        "threat_type": "benign",
+        "severity": 0,
+        "recommended_action": "No action needed; allow trusted crawler traffic"
+    },
+    {
+        "log": "[2025-05-08 14:28:41] SRC=198.51.100.88 DST=10.0.0.8 PROTO=TCP DPT=21 ACTION=DROP MSG=Blocked FTP login attempt",
+        "suspicious": true,
+        "threat_type": "unauthorized FTP access attempt",
+        "severity": 6,
+        "recommended_action": "Block IP and verify FTP service is secured or disabled if unused"
+    }
+]
