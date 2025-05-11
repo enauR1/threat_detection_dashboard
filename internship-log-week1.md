@@ -1,10 +1,3 @@
-Thanks for calling that out — you're absolutely right to expect the full detail. I trimmed for clarity and visual appeal in Markdown, but you’re doing a **high-accountability internship**, and detail matters.
-
-Let me restore **everything** you originally wrote — but with just enough formatting to make it clean, readable, and still professional for your `.md` log file.
-
----
-
-### 📁 Here's the **fully restored and formatted version** of your Week 1 log:
 
 ---
 
@@ -102,7 +95,7 @@ Time was primarily focused on learning and environment setup. These steps were e
 
 ### 📅 May 10, 2025
 
-**Total Hours Worked:** 6
+**Total Hours Worked:** 4
 
 ---
 
@@ -127,7 +120,7 @@ Time was primarily focused on learning and environment setup. These steps were e
 
 ### 📅 May 11–12, 2025
 
-**Total Hours Worked:** 6
+**Total Hours Worked:** 4
 
 ---
 
@@ -143,4 +136,26 @@ Time was primarily focused on learning and environment setup. These steps were e
 
 ---
 
-Let me know if you'd like this saved as a `.md` file, or if you'd like to roll right into Streamlit Phase 2 now!
+### 📅 May 11, 2025
+
+**Total Hours Worked:** 6.5
+
+---
+
+**Tasks Completed:**
+
+
+| Area                                | Work Completed                                                                                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Streamlit Dashboard (front‑end)** | • Built a clean **dashboard/dashboard.py** from scratch.<br> – Page config + 30 s auto‑refresh.<br> – Sidebar severity slider & threat‑type multiselect.<br> – Color‑coded table (Styler) plus pie‑ and bar‑charts.<br> – Download buttons for filtered logs (CSV / JSON).<br> – Compatible with older pandas versions (removed `names=` argument).                                                     |
+| **Log Generation Script**           | • Created a simplified **src/log\_streamer.py** that writes fully‑structured test logs to **data/simulated\_output.json** every 15 s.<br> – Fixed absolute‑path logic so it always targets the project’s `/data` folder.<br> – Replaced deprecated `datetime.utcnow()` with `datetime.now(timezone.utc)` to eliminate warnings.<br> – Verified console output (“• appended”) and confirmed file growth. |
+| **Troubleshooting / Debugging**     | • Resolved mismatched file paths (`live_logs.jsonl` vs `simulated_output.json`).<br>• Diagnosed silent output by adding diagnostic prints.<br>• Fixed pandas compatibility error (`reset_index(names=…)`).<br>• Ensured Streamlit refreshes successfully and shows updated counts.                                                                                                                      |
+| **Project Direction & Planning**    | • Stepped back to clarify ultimate goal: **AI‑augmented SOC dashboard** that ingests raw logs, classifies & explains them via an LLM, and presents results in real time.<br>• Outlined remaining milestones (rule‑based real‑time analyzer → LLM integration → polish → deployment).                                                                                                                    |
+| **Housekeeping**                    | • Updated code comments, removed unused imports, and confirmed folder structure in version control.                                                                                                                                                                                                                                                                                                     |
+Outstanding / Next Up
+
+Insert analysis layer – first rule‑based, then LM Studio LLM, so the dashboard ingests raw logs instead of pre‑classified ones.
+
+Add keyword search box and timeline sorting to the UI.
+
+Begin setting up LM Studio endpoint for local LLM testing.
