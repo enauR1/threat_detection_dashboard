@@ -118,7 +118,7 @@ Time was primarily focused on learning and environment setup. These steps were e
 
 ---
 
-### 📅 May 11–12, 2025
+### 📅 May 10-11, 2025
 
 **Total Hours Worked:** 4
 
