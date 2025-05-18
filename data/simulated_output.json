@@ -1,0 +1,38 @@
+[
+  {
+    "timestamp": "2025-05-17 21:39:43",
+    "source": "Network",
+    "message": "Unexpected privilege escalation for user guest",
+    "is_threat": true,
+    "threat_level": "Medium",
+    "threat_type": "Privilege Escalation",
+    "explanation": "An unexpected privilege escalation under a guest account may indicate unauthorized access, which should be investigated to prevent potential security breaches.",
+    "recommended_action": "Conduct an investigation into the privileges of the guest account and ensure proper system configurations. Verify if this is a legitimate activity or unauthorized access by monitoring permissions and logs closely.",
+    "confidence": "Medium",
+    "analysis_time": "2025-05-17 21:39:51"
+  },
+  {
+    "timestamp": "2025-05-17 21:39:43",
+    "source": "Firewall",
+    "message": "Unusual outbound traffic to IP 192.168.47.112 on port 3389",
+    "is_threat": false,
+    "threat_level": "Low",
+    "threat_type": "Normal Activity",
+    "explanation": "The outbound traffic to port 3389 on IP 192.168.47.112 is unusual but could be legitimate activity within the local network. Without specific evidence of malicious intent, it's considered low risk.",
+    "recommended_action": "Continue routine monitoring",
+    "confidence": "Low",
+    "analysis_time": "2025-05-17 21:39:57"
+  },
+  {
+    "timestamp": "2025-05-17 21:39:43",
+    "source": "IDS",
+    "message": "Connection from IP 192.168.84.173 to port 445 (HTTP)",
+    "is_threat": false,
+    "threat_level": "None",
+    "threat_type": "Normal Activity",
+    "explanation": "The connection from IP 192.168.84.173 to port 445 (HTTP) is a normal network activity, likely accessing web resources.",
+    "recommended_action": "Continue routine monitoring",
+    "confidence": "High",
+    "analysis_time": "2025-05-17 21:40:04"
+  }
+]

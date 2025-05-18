@@ -7,7 +7,7 @@ import os
 import requests
 import re
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -17,6 +17,128 @@ st.set_page_config(
     page_icon="🛡️",
     layout="wide"
 )
+
+# Initialize theme state if not already done
+if 'theme' not in st.session_state:
+    st.session_state.theme = "Light"
+
+# Apply theme based on session state
+if st.session_state.get('theme') == "Dark":
+    # Dark theme CSS
+    st.markdown("""
+    <style>
+        /* Overall app background and text */
+        .stApp {
+            background-color: #0e1117;
+            color: #fafafa;
+        }
+        
+        /* Sidebar */
+        [data-testid="stSidebar"] {
+            background-color: #1a1a1a;
+            border-right: 1px solid #333;
+        }
+        
+        /* Fix sidebar text color */
+        [data-testid="stSidebar"] .stMarkdown,
+        [data-testid="stSidebar"] .stSelectbox label,
+        [data-testid="stSidebar"] .stSlider label,
+        [data-testid="stSidebar"] .stHeader,
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] span,
+        [data-testid="stSidebar"] div:not(.stAlert) {
+            color: #fafafa !important;
+        }
+        
+        /* Fix sidebar input fields */
+        [data-testid="stSidebar"] input,
+        [data-testid="stSidebar"] .stTextInput input, 
+        [data-testid="stSidebar"] .stNumberInput input {
+            color: #fafafa !important;
+            background-color: #333 !important;
+        }
+        
+        /* Fix sidebar widgets */
+        [data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] div,
+        [data-testid="stSidebar"] .stMultiSelect [data-baseweb="select"] div {
+            background-color: #333 !important;
+            color: #fafafa !important;
+        }
+                
+        /* Fix top right menu buttons */
+        [data-testid="stToolbar"] button,
+        [data-testid="baseButton-headerNoPadding"],
+        div[data-testid="stActionButtonIcon"] {
+            color: #fafafa !important;
+            background-color: rgba(38, 39, 48, 0.3) !important;
+            border-color: #4d4d4d !important;
+        }
+
+        /* Fix deploy and other top menu items */
+        .main-menu-dropdown,
+        [data-testid="stAppViewBlockContainer"] > div:first-child div button {
+            color: #fafafa !important;
+        }
+
+        /* Fix dropdown menus */
+        [data-baseweb="select"] svg,
+        [data-baseweb="select"] span,
+        [data-baseweb="popover"] div {
+            color: #fafafa !important;
+        }
+
+        /* Fix header buttons hover */
+        [data-testid="stToolbar"] button:hover,
+        [data-testid="baseButton-headerNoPadding"]:hover {
+            background-color: rgba(70, 70, 80, 0.5) !important;
+        }       
+                       
+        /* Containers and cards */
+        [data-testid="stContainer"] {
+            background-color: #262730;
+            border: 1px solid #333;
+        }
+        
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {
+            color: #fff !important;
+        }
+        
+        /* Expanders */
+        .streamlit-expanderHeader {
+            background-color: #262730;
+            color: white;
+        }
+        
+        /* Dataframes */
+        .dataframe {
+            background-color: #0e1117;
+            color: white;
+        }
+        
+        .dataframe tbody tr:nth-child(even) {
+            background-color: #1a1a1a;
+        }
+        
+        .dataframe th {
+            background-color: #262730;
+            color: white;
+        }
+        
+        /* Buttons */
+        .stButton>button {
+            color: #fafafa;
+            background-color: #262730;
+            border: 1px solid #333;
+        }
+        
+        /* Text inputs */
+        .stTextInput>div>div {
+            background-color: #262730;
+            color: #fafafa;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
 # -------------------- LM Studio Analyzer Class --------------------
 class LMStudioAnalyzer:
@@ -49,10 +171,11 @@ class LMStudioAnalyzer:
         
         Security log: {log_entry}
         
-        Consider the following in your analysis:
-        1. Is this a known attack pattern (brute force, SQL injection, etc.)?
-        2. What is the potential impact of this activity?
-        3. Is this likely a false positive or benign activity?
+        Follow this structured analysis approach:
+        1. Evaluate the source and context of the activity
+        2. Compare against known threat patterns and signatures
+        3. Check for anomalous or unusual behavior
+        4. Assess potential impact if the activity is malicious
         
         Categorize the threat level as:
         - Critical: Immediate action required, active compromise likely
@@ -61,15 +184,25 @@ class LMStudioAnalyzer:
         - Low: Possible concern but limited risk
         - None: Normal or expected activity
         
+        For ALL logs, including non-threats, provide complete information in your analysis.
+        
         Respond ONLY in the following JSON format:
         {{
           "is_threat": true/false,
           "threat_level": "Critical/High/Medium/Low/None",
-          "threat_type": "Specific type (e.g., brute force, SQL injection, unauthorized access)",
+          "threat_type": "Specific type (e.g., brute force, SQL injection, unauthorized access) or 'Normal Activity' for non-threats",
           "explanation": "Brief explanation of why this is or isn't a threat",
-          "recommended_action": "Specific steps to address this threat",
-          "confidence": "High/Medium/Low"
+          "recommended_action": "Specific steps to address this threat or 'Continue routine monitoring' for non-threats",
+          "confidence": "High/Medium/Low (indicating certainty in your assessment, not severity)"
         }}
+        
+        Important guidelines:
+        - Even for non-threatening logs, always provide values for ALL fields
+        - For non-threats, use "Normal Activity" as the threat_type
+        - For non-threats, use "Continue routine monitoring" or similar as the recommended_action
+        - The confidence field should reflect your certainty in the classification, not the severity
+        - Keep explanations concise but informative
+        - Focus on actionable insights in your recommendations
         """
         
         try:
@@ -139,6 +272,99 @@ class LMStudioAnalyzer:
                 "confidence": "Low"
             }
 
+# -------------------- Threat Correlation Engine --------------------
+class ThreatCorrelationEngine:
+    def __init__(self, time_window=30):
+        """Initialize correlation engine with a time window (in minutes)"""
+        self.time_window = time_window
+        self.potential_attack_patterns = {
+            "brute_force": {
+                "indicators": ["failed login", "authentication failure", "unsuccessful login"],
+                "threshold": 3,
+                "description": "Multiple failed login attempts indicate a possible brute force attack"
+            },
+            "port_scan": {
+                "indicators": ["port scan", "connection attempt", "port"],
+                "threshold": 3,
+                "description": "Multiple connection attempts to different ports indicate a possible port scan"
+            },
+            "data_exfiltration": {
+                "indicators": ["unusual outbound", "large data transfer", "unexpected traffic"],
+                "threshold": 2,
+                "description": "Unusual outbound traffic may indicate data exfiltration"
+            },
+            "lateral_movement": {
+                "indicators": ["internal", "privilege escalation", "unauthorized access"],
+                "threshold": 2,
+                "description": "Activity across multiple internal systems may indicate lateral movement"
+            },
+            "malware_activity": {
+                "indicators": ["malware", "virus", "trojan", "suspicious file", "unusual process"],
+                "threshold": 2,
+                "description": "Multiple malware-related events indicate active infection"
+            }
+        }
+    
+    def find_correlated_threats(self, logs):
+        """Analyze logs to find correlated threats"""
+        # Skip if not enough logs
+        if len(logs) < 2:
+            return []
+            
+        # Sort logs by timestamp
+        sorted_logs = sorted(logs, key=lambda x: x.get("timestamp", ""))
+        
+        # Find time window
+        now = datetime.now()
+        cutoff_time = now - timedelta(minutes=self.time_window)
+        
+        # Filter logs within time window
+        recent_logs = []
+        for log in sorted_logs:
+            try:
+                log_time = datetime.strptime(log.get("timestamp", now.strftime("%Y-%m-%d %H:%M:%S")), "%Y-%m-%d %H:%M:%S")
+                if log_time > cutoff_time:
+                    recent_logs.append(log)
+            except (ValueError, TypeError):
+                continue  # Skip logs with invalid timestamps
+        
+        # Correlation results
+        correlations = []
+        
+        # Check each attack pattern
+        for pattern_name, pattern_info in self.potential_attack_patterns.items():
+            # Find logs matching this pattern
+            matching_logs = []
+            
+            for log in recent_logs:
+                message = log.get("message", "").lower()
+                if any(indicator.lower() in message for indicator in pattern_info["indicators"]):
+                    matching_logs.append(log)
+            
+            # If enough matching logs found, create correlation
+            if len(matching_logs) >= pattern_info["threshold"]:
+                # Extract IPs if possible
+                source_ips = []
+                for log in matching_logs:
+                    message = log.get("message", "")
+                    # Simple IP extraction - can be improved
+                    ip_match = re.search(r'IP\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', message)
+                    if ip_match:
+                        source_ips.append(ip_match.group(1))
+                
+                correlation = {
+                    "pattern_name": pattern_name,
+                    "severity": "High" if len(matching_logs) > pattern_info["threshold"] + 1 else "Medium",
+                    "description": pattern_info["description"],
+                    "matching_logs": len(matching_logs),
+                    "first_seen": matching_logs[0].get("timestamp", ""),
+                    "last_seen": matching_logs[-1].get("timestamp", ""),
+                    "source_ips": list(set(source_ips))
+                }
+                correlations.append(correlation)
+        
+        return correlations
+
 # -------------------- Log Source Classes --------------------
 class LogSource:
     def get_logs(self, count=5):
@@ -156,7 +382,11 @@ class SampleLogSource(LogSource):
             "DNS request to {domain_type} domain {domain}",
             "Firewall {action} connection from {ip} to {target}",
             "System file {file} {action} by user {user}",
-            "Unexpected privilege escalation for user {user}"
+            "Unexpected privilege escalation for user {user}",
+            "Multiple failed login attempts for user {user} from IP {ip}",
+            "Malware detection: {malware_type} found in {file}",
+            "Suspicious process {process} started by user {user}",
+            "Large data transfer ({size}MB) to external IP {ip}"
         ]
         
         logs = []
@@ -176,13 +406,16 @@ class SampleLogSource(LogSource):
                 domain=f"example{random.randint(1, 999)}.com",
                 action=random.choice(["blocked", "allowed", "flagged", "monitored"]),
                 target=f"10.0.0.{random.randint(1, 254)}",
-                file=f"/etc/{random.choice(['passwd', 'shadow', 'hosts', 'config', 'system'])}"
+                file=f"/etc/{random.choice(['passwd', 'shadow', 'hosts', 'config', 'system'])}",
+                malware_type=random.choice(["Trojan", "Virus", "Ransomware", "Keylogger"]),
+                process=random.choice(["cmd.exe", "powershell.exe", "bash", "python"]),
+                size=random.randint(50, 500)
             )
             
             # Create log entry
             log_entry = {
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "source": random.choice(["Firewall", "IDS", "Authentication", "Network"]),
+                "source": random.choice(["Firewall", "IDS", "Authentication", "Network", "Antivirus", "HIDS"]),
                 "message": log_text
             }
             logs.append(log_entry)
@@ -255,12 +488,26 @@ if 'threat_stats' not in st.session_state:
         "Error": 0
     }
 
+# Initialize correlation engine
+if 'correlation_engine' not in st.session_state:
+    st.session_state.correlation_engine = ThreatCorrelationEngine()
+
+if 'correlated_threats' not in st.session_state:
+    st.session_state.correlated_threats = []
+
 # -------------------- Dashboard Layout --------------------
 # Dashboard title
 st.title("🛡️ AI Threat Detection Dashboard")
 
 # Sidebar for configuration
 with st.sidebar:
+    # Theme selector
+    st.header("Theme Settings")
+    theme = st.selectbox("Dashboard Theme", ["Light", "Dark"], index=["Light", "Dark"].index(st.session_state.theme))
+    if theme != st.session_state.theme:
+        st.session_state.theme = theme
+        st.rerun()
+    
     st.header("LM Studio Connection")
     api_url = st.text_input("LM Studio API URL", "http://localhost:1234/v1")
     
@@ -305,6 +552,11 @@ with st.sidebar:
     st.header("Dashboard Settings")
     refresh_rate = st.slider("Refresh Rate (seconds)", 2, 60, 10)
     
+    # Correlation settings
+    st.header("Correlation Settings")
+    correlation_window = st.slider("Correlation Time Window (minutes)", 5, 60, 30)
+    st.session_state.correlation_engine.time_window = correlation_window
+    
     st.header("Filter Options")
     threat_level = st.multiselect(
         "Threat Level", 
@@ -325,9 +577,20 @@ with col2:
     st.header("Threat Statistics")
     stats_container = st.container(height=400)
 
+# Threat correlation section
+st.header("Threat Correlations")
+correlation_container = st.container(height=300)
+
+# Timeline visualization
+timeline_container = st.container(height=400)
+
 # Bottom section for log browser
 st.header("Log Analysis Results")
 log_browser = st.container(height=300)
+
+# Raw logs section
+st.header("Raw Logs (Before Analysis)")
+raw_log_container = st.container(height=200)
 
 # Function to analyze logs and update dashboard
 def analyze_and_update():
@@ -367,6 +630,41 @@ def analyze_and_update():
         st.session_state.logs = st.session_state.logs[-max_logs:]
     if len(st.session_state.analyzed_logs) > max_logs:
         st.session_state.analyzed_logs = st.session_state.analyzed_logs[-max_logs:]
+    
+    # Perform correlation analysis
+    if len(st.session_state.analyzed_logs) >= 2:
+        correlations = st.session_state.correlation_engine.find_correlated_threats(
+            st.session_state.analyzed_logs
+        )
+        
+        # Add any new correlations to the list
+        for correlation in correlations:
+            # Check if this correlation is already in the list
+            if not any(c.get("pattern_name") == correlation["pattern_name"] and
+                    c.get("first_seen") == correlation["first_seen"]
+                    for c in st.session_state.correlated_threats):
+                correlation["detection_time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                st.session_state.correlated_threats.append(correlation)
+        
+        # Keep only the most recent correlations
+        if len(st.session_state.correlated_threats) > 20:
+            st.session_state.correlated_threats = st.session_state.correlated_threats[-20:]
+    
+    # Save analysis results
+    if st.session_state.analyzed_logs:
+        try:
+            # Get the directory where the current script is located
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            # Create a path relative to that directory
+            save_path = os.path.join(current_dir, '..', 'data', 'simulated_output.json')
+            
+            # Create the directory if it doesn't exist
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            
+            with open(save_path, 'w') as f:
+                json.dump(st.session_state.analyzed_logs, f, indent=2)
+        except Exception as e:
+            st.error(f"Error saving analysis results: {str(e)}")
     
     # Calculate processing time
     processing_time = time.time() - start_time
@@ -460,6 +758,104 @@ def update_dashboard_display(processing_time):
         else:
             st.info("No threat data available yet")
     
+    # Update correlation display
+    with correlation_container:
+        correlation_container.empty()
+        
+        if st.session_state.correlated_threats:
+            st.markdown("### Detected Attack Patterns")
+            
+            for correlation in st.session_state.correlated_threats:
+                with st.expander(f"**{correlation['pattern_name'].replace('_', ' ').title()}** - {correlation['severity']} severity"):
+                    st.markdown(f"**Description:** {correlation['description']}")
+                    st.markdown(f"**First seen:** {correlation['first_seen']}")
+                    st.markdown(f"**Last seen:** {correlation['last_seen']}")
+                    st.markdown(f"**Matching logs:** {correlation['matching_logs']}")
+                    
+                    if correlation.get('source_ips'):
+                        st.markdown(f"**Source IPs:** {', '.join(correlation['source_ips'])}")
+                    
+                    st.markdown("---")
+                    st.markdown("**Recommended action:** Investigate these related events as they may be part of a coordinated attack.")
+        else:
+            st.info("No correlated threats detected yet. Correlation requires multiple related logs.")
+    
+    # Update timeline visualization
+    with timeline_container:
+        timeline_container.empty()
+        
+        if st.session_state.correlated_threats and len(st.session_state.analyzed_logs) > 5:
+            st.subheader("Attack Timeline")
+            
+            # Prepare timeline data
+            timeline_data = []
+            
+            # Add individual logs
+            for log in st.session_state.analyzed_logs[-20:]:  # Last 20 logs
+                if log.get("is_threat", False):
+                    try:
+                        timeline_data.append({
+                            "Time": datetime.strptime(log.get("timestamp", ""), "%Y-%m-%d %H:%M:%S"),
+                            "Type": log.get("threat_type", "Unknown"),
+                            "Severity": log.get("threat_level", "Low"),
+                            "Description": f"Individual log: {log.get('message', '')[:50]}..."
+                        })
+                    except ValueError:
+                        continue  # Skip logs with invalid timestamps
+            
+            # Add correlated events
+            for corr in st.session_state.correlated_threats:
+                try:
+                    timeline_data.append({
+                        "Time": datetime.strptime(corr.get("detection_time", ""), "%Y-%m-%d %H:%M:%S"),
+                        "Type": corr.get("pattern_name", "").replace("_", " ").title(),
+                        "Severity": corr.get("severity", "Medium"),
+                        "Description": f"Correlated attack: {corr.get('description', '')}"
+                    })
+                except ValueError:
+                    continue  # Skip correlations with invalid timestamps
+            
+            # Only create visualization if we have data
+            if timeline_data:
+                # Sort by time
+                timeline_df = pd.DataFrame(timeline_data)
+                timeline_df = timeline_df.sort_values("Time")
+                
+                # Create color map
+                color_map = {
+                    "Critical": "red",
+                    "High": "orange",
+                    "Medium": "yellow",
+                    "Low": "blue",
+                    "None": "green"
+                }
+                
+                # Create figure
+                fig = px.scatter(
+                    timeline_df,
+                    x="Time",
+                    y="Type",
+                    color="Severity",
+                    color_discrete_map=color_map,
+                    hover_data=["Description"],
+                    size_max=10,
+                    title="Security Event Timeline"
+                )
+                
+                # Customize layout
+                fig.update_layout(
+                    xaxis_title="Time",
+                    yaxis_title="Event Type",
+                    height=400
+                )
+                
+                # Show figure
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("Not enough data for timeline visualization")
+        else:
+            st.info("Timeline visualization will appear when correlated threats are detected")
+    
     # Update log browser
     with log_browser:
         log_browser.empty()
@@ -475,6 +871,16 @@ def update_dashboard_display(processing_time):
             st.dataframe(display_df, use_container_width=True)
         else:
             st.info("No logs collected yet")
+    
+    # Update raw logs display
+    with raw_log_container:
+        raw_log_container.empty()
+        if st.session_state.logs:
+            # Create DataFrame for raw logs
+            raw_df = pd.DataFrame(st.session_state.logs)
+            st.dataframe(raw_df, use_container_width=True)
+        else:
+            st.info("No raw logs collected yet")
             
 # Add buttons to control monitoring
 col1, col2, col3 = st.columns(3)
@@ -497,6 +903,7 @@ with col3:
     if st.button("Clear All Logs"):
         st.session_state.logs = []
         st.session_state.analyzed_logs = []
+        st.session_state.correlated_threats = []
         st.session_state.threat_stats = {
             "Critical": 0,
             "High": 0,
@@ -531,7 +938,7 @@ if st.session_state.monitoring:
     # Add a note about auto-refresh
     st.info("Dashboard will automatically refresh to show new data. If monitoring stops, click 'Start Monitoring' again.")
     
-    # We'll use an experimental rerun in a moment
+    # We'll use rerun in a moment
     time.sleep(1)
     st.rerun()
 
@@ -556,14 +963,17 @@ with st.expander("About this Dashboard"):
     - Threat type identification
     - Confidence levels for each analysis
     - Recommended actions for detected threats
-    - Visual statistics and trend analysis
+    - Advanced threat correlation to identify attack patterns
+    - Visual timeline of security events
     - Filtering by threat level
+    - Dark mode support
     
     ### How it works:
     1. Security logs are collected from your selected source
     2. Each log is sent to LM Studio for AI-powered analysis
-    3. Results are processed and displayed in real-time
-    4. Dashboard updates automatically with new data
+    3. The correlation engine identifies related events that may indicate coordinated attacks
+    4. Results are processed and displayed in real-time
+    5. Dashboard updates automatically with new data
     
     This dashboard is part of a university internship project focused on AI-based security threat detection.
     """)
