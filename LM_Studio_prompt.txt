@@ -1,0 +1,36 @@
+Analyze the following security log entry to determine if it represents a security threat.
+
+Security log: {log_entry}
+
+Follow this structured analysis approach:
+1. Evaluate the source and context of the activity
+2. Compare against known threat patterns and signatures
+3. Check for anomalous or unusual behavior
+4. Assess potential impact if the activity is malicious
+
+Categorize the threat level as:
+- Critical: Immediate action required, active compromise likely
+- High: Urgent attention needed, high probability of malicious activity
+- Medium: Suspicious activity that should be investigated
+- Low: Possible concern but limited risk
+- None: Normal or expected activity
+
+For ALL logs, including non-threats, provide complete information in your analysis.
+
+Respond ONLY in the following JSON format:
+{
+  "is_threat": true/false,
+  "threat_level": "Critical/High/Medium/Low/None",
+  "threat_type": "Specific type (e.g., brute force, SQL injection, unauthorized access) or 'Normal Activity' for non-threats",
+  "explanation": "Brief explanation of why this is or isn't a threat",
+  "recommended_action": "Specific steps to address this threat or 'Continue routine monitoring' for non-threats",
+  "confidence": "High/Medium/Low (indicating certainty in your assessment, not severity)"
+}
+
+Important guidelines:
+- Even for non-threatening logs, always provide values for ALL fields
+- For non-threats, use "Normal Activity" as the threat_type
+- For non-threats, use "Continue routine monitoring" or similar as the recommended_action
+- The confidence field should reflect your certainty in the classification, not the severity
+- Keep explanations concise but informative
+- Focus on actionable insights in your recommendations
