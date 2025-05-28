@@ -1,0 +1,132 @@
+{
+  "logs": [
+    {
+      "timestamp": "2025-05-28 17:44:04",
+      "source": "HIDS",
+      "message": "Malware detection: Virus found in /etc/passwd"
+    },
+    {
+      "timestamp": "2025-05-28 17:44:04",
+      "source": "Network",
+      "message": "Large data transfer (348MB) to external IP 192.168.55.39"
+    },
+    {
+      "timestamp": "2025-05-28 17:44:04",
+      "source": "Authentication",
+      "message": "Suspicious process python started by user admin"
+    },
+    {
+      "timestamp": "2025-05-28 17:49:42",
+      "source": "HIDS",
+      "message": "Firewall monitored connection from 192.168.33.23 to 10.0.0.161"
+    },
+    {
+      "timestamp": "2025-05-28 17:49:42",
+      "source": "Network",
+      "message": "Port scan detected from IP 192.168.161.238, scanning ports 73-202"
+    },
+    {
+      "timestamp": "2025-05-28 17:49:42",
+      "source": "IDS",
+      "message": "Large data transfer (391MB) to external IP 192.168.17.49"
+    }
+  ],
+  "analyzed_logs": [
+    {
+      "timestamp": "2025-05-28 17:44:04",
+      "source": "HIDS",
+      "message": "Malware detection: Virus found in /etc/passwd",
+      "is_threat": false,
+      "threat_level": "Low",
+      "threat_type": "Normal Activity",
+      "explanation": "The detection of a virus in /etc/passwd is a known activity that can occur during system updates or installations. It does not indicate an active threat unless further signs of malicious intent are present.",
+      "recommended_action": "Continue routine monitoring and ensure the virus is properly handled to prevent potential data breaches.",
+      "confidence": "High",
+      "analysis_time": "2025-05-28 17:44:10"
+    },
+    {
+      "timestamp": "2025-05-28 17:44:04",
+      "source": "Network",
+      "message": "Large data transfer (348MB) to external IP 192.168.55.39",
+      "is_threat": false,
+      "threat_level": "None",
+      "threat_type": "Normal Activity",
+      "explanation": "The activity appears to be normal internal network communication within the same subnet. The data transfer is not indicative of malicious behavior unless there's a pattern suggesting otherwise.",
+      "recommended_action": "Continue routine monitoring",
+      "confidence": "High",
+      "analysis_time": "2025-05-28 17:44:16"
+    },
+    {
+      "timestamp": "2025-05-28 17:44:04",
+      "source": "Authentication",
+      "message": "Suspicious process python started by user admin",
+      "is_threat": true,
+      "threat_level": "Medium",
+      "threat_type": "Unauthorized Access via Admin Account",
+      "explanation": "The suspicious process starting as Python by an admin user could indicate potential unauthorized access or malicious activity, requiring further investigation.",
+      "recommended_action": "Monitor for additional signs of malicious intent and ensure proper permissions are enforced for the admin account.",
+      "confidence": "Medium",
+      "analysis_time": "2025-05-28 17:44:22"
+    },
+    {
+      "timestamp": "2025-05-28 17:49:42",
+      "source": "HIDS",
+      "message": "Firewall monitored connection from 192.168.33.23 to 10.0.0.161",
+      "is_threat": false,
+      "threat_level": "None",
+      "threat_type": "Normal Activity",
+      "explanation": "The activity is normal network monitoring from an internal IP to an external public IP within the same AS block. No signs of unauthorized access or malicious intent detected.",
+      "recommended_action": "Continue routine monitoring",
+      "confidence": "High",
+      "analysis_time": "2025-05-28 17:49:49"
+    },
+    {
+      "timestamp": "2025-05-28 17:49:42",
+      "source": "Network",
+      "message": "Port scan detected from IP 192.168.161.238, scanning ports 73-202",
+      "is_threat": false,
+      "threat_level": "None",
+      "threat_type": "Normal Activity",
+      "explanation": "The port scan on IP 192.168.161.238, scanning ports 73-202, is likely a routine network security check within the internal network. It does not indicate malicious activity unless additional context suggests otherwise.",
+      "recommended_action": "Continue routine monitoring",
+      "confidence": "High",
+      "analysis_time": "2025-05-28 17:49:56"
+    },
+    {
+      "timestamp": "2025-05-28 17:49:42",
+      "source": "IDS",
+      "message": "Large data transfer (391MB) to external IP 192.168.17.49",
+      "is_threat": false,
+      "threat_level": "Low",
+      "threat_type": "Normal Activity",
+      "explanation": "The data transfer to 192.168.17.49 is a known default route IP, indicating internal network communication rather than external. No malicious signs are present.",
+      "recommended_action": "Continue routine monitoring",
+      "confidence": "High",
+      "analysis_time": "2025-05-28 17:50:03"
+    }
+  ],
+  "threat_stats": {
+    "Critical": 0,
+    "High": 0,
+    "Medium": 1,
+    "Low": 2,
+    "None": 3,
+    "Error": 0
+  },
+  "correlated_threats": [
+    {
+      "pattern_name": "data_exfiltration",
+      "severity": "Medium",
+      "description": "Unusual outbound traffic may indicate data exfiltration",
+      "matching_logs": 2,
+      "first_seen": "2025-05-28 17:44:04",
+      "last_seen": "2025-05-28 17:49:42",
+      "source_ips": [
+        "192.168.17.49",
+        "192.168.55.39"
+      ],
+      "detection_time": "2025-05-28 17:50:03"
+    }
+  ],
+  "last_update_time": null
+}

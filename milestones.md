@@ -1,73 +1,91 @@
+# 🛡️ AI Threat Detection Dashboard
 
-# 🛡️ AI Threat Detection Dashboard – Project Milestones
-
-**Intern:** Patrick Ruane  
-**Project Scope:** 75 hours  
-**Start Date:** May 10, 2025  
-**Tracker Generated:** May 11, 2025
+A live‑updating Streamlit app that ingests IDS / firewall logs, classifies threats, and visualises them with interactive filters and charts.  
+Built as part of an AI Prompt‑Engineer internship to showcase AI‑assisted cybersecurity analytics.
 
 ---
 
-## ✅ Phase 1: Log Classification Engine (Complete) — 6 hrs
+## 🚀 Demo
 
-- [x] Set up folder structure and project repo
-- [x] Build rule-based log parser and classifier
-- [x] Tune severity, threat_type, recommendations
-- [x] Validate simulated output
-- [x] Finalize `log_analyzer.py`
+| Hosting          | URL                                                                                                                     |
+|------------------|-------------------------------------------------------------------------------------------------------------------------|
+| Streamlit Cloud  | <https://enauR1-threat-detection-dashboard.streamlit.app> 
 
 ---
 
-## 📊 Phase 2: Streamlit Threat Dashboard — Est. 15–18 hrs
+## ✨ Features
 
-- [ ] Create Streamlit interface
-- [ ] Load and render JSON log data
-- [ ] Add filtering by threat_type, severity, etc.
-- [ ] Add severity color-coding and table display
-- [ ] Build chart visualizations (bar, pie, line)
-- [ ] Export view/download filtered logs
-- [ ] Add log timeline / refresh simulation
-- [ ] Prepare for GitHub deployment
-
----
-
-## 🤖 Phase 3: GPT-4o Integration — Est. 10–15 hrs
-
-- [ ] Design GPT prompt schema for log entries
-- [ ] Replace rule-based classification with GPT
-- [ ] Compare rule-based vs GPT classifications
-- [ ] Add GPT explanations to UI
-- [ ] Handle rate limiting / token management
-- [ ] Log performance / time differences
+| Category      | Highlights                                                                                         |
+|---------------|-----------------------------------------------------------------------------------------------------|
+| **Live feed** | Auto‑refresh every 30 s to simulate incoming logs                                                   |
+| **Filtering** | Sidebar severity slider (0–10) and multiselect for threat types                                     |
+| **Table**     | Color‑coded rows by severity (Critical → red · High → yellow · Medium → blue · Low → green)         |
+| **Charts**    | Pie chart (threat‑type distribution) · Bar chart (severity counts)                                  |
+| **Downloads** | One‑click export of filtered logs as **CSV** or **JSON**                                            |
+| **Extensible**| Ready for GPT explanations, CVE look‑ups, analyst notes, live log streaming, etc.                   |
 
 ---
 
-## 🔐 Phase 4: Advanced Security Add-Ons — Est. 15–18 hrs
-
-- [ ] Live log simulator (writes to file in real-time)
-- [ ] IP reputation tagging
-- [ ] Flag internal vs external traffic
-- [ ] Simulated response actions (block, alert)
-- [ ] MITRE ATT&CK tagging simulation
-- [ ] Analyst note generator (prompted)
-
----
-
-## 📝 Phase 5: Documentation & GitHub Polish — Est. 8–10 hrs
-
-- [ ] Write README with architecture, features, tools
-- [ ] Add annotated code snippets
-- [ ] Include screenshots or demo GIFs
-- [ ] Final commit with structure and instructions
-- [ ] Upload to GitHub and deploy to Streamlit Cloud
+## 🗂️ Project Structure
+```
+threat_detection_dashboard/
+├─ data/
+│  └─ simulated_output.json        # Current log dataset
+├─ dashboard/
+│  └─ dashboard.py                 # Streamlit app
+├─ src/
+│  └─ log_analyzer.py              # Rule‑based log classifier
+├─ milestones.md                   # 70‑h roadmap
+├─ activity_log.md                 # Weekly internship log
+└─ README.md                       # You are here
+```
 
 ---
 
-## 🧩 Optional Stretch Goals — Est. 8–10 hrs
+## 🛠️ Installation
 
-- [ ] Threat intel feed integration
-- [ ] Analyst report PDF generator
-- [ ] AI-assisted rule update trainer
-- [ ] Command-line alert script
+```bash
+git clone https://github.com/enauR1/threat_detection_dashboard.git
+cd threat_detection_dashboard
+
 
 ---
+
+## ▶️ Running Locally
+
+```bash
+streamlit run dashboard/dashboard.py
+```
+
+Then open **http://localhost:8501** in your browser.
+
+---
+
+## 🌐 Deploying to Streamlit Cloud
+
+1. Push this repo (already done) to **GitHub**.  
+2. Log in to <https://streamlit.io/cloud> and click **New app**.  
+3. Select **enauR1/threat_detection_dashboard** and set the main file to `dashboard/dashboard.py`.  
+4. Click **Deploy** – your public URL (shown above) goes live.
+
+---
+
+## 🔮 Planned Enhancements
+- GPT‑4 explanations for suspicious logs
+- CVE correlation via NVD API with mitigation guidance
+- Analyst note‑taking and incident workflow
+- Live log generator & smooth scrolling “war‑room” view
+- Dark/light theme toggle and overall UI polish
+
+See **`milestones.md`** for the full 70‑hour roadmap.
+
+---
+
+## 👥 Contributing
+
+Pull requests welcome! Fork, create a feature branch, commit descriptive messages, and open a PR.
+
+---
+
+## 📝 License
+MIT © 2025 Patrick Ruane

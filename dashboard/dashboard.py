@@ -64,6 +64,16 @@ if st.session_state.get('theme') == "Dark":
             background-color: #333 !important;
             color: #fafafa !important;
         }
+
+        /* Fix dropdown menu options - make text black for better visibility */
+        [data-baseweb="popover"] div[role="listbox"] div {
+            color: #000000 !important;
+        }
+
+        /* Keep selected option text white */
+        [data-baseweb="select"] div[data-testid="stMarkdown"] {
+            color: #fafafa !important;
+        }
                 
         /* Fix top right menu buttons */
         [data-testid="stToolbar"] button,
@@ -82,8 +92,7 @@ if st.session_state.get('theme') == "Dark":
 
         /* Fix dropdown menus */
         [data-baseweb="select"] svg,
-        [data-baseweb="select"] span,
-        [data-baseweb="popover"] div {
+        [data-baseweb="select"] span {
             color: #fafafa !important;
         }
 
