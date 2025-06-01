@@ -917,6 +917,19 @@ def update_dashboard_display(processing_time):
         else:
             st.info("No raw logs collected yet")
             
+def display_existing_data():
+    """Display existing data from session state without reanalysis"""
+    # Only update display if we have data to show
+    if (st.session_state.analyzed_logs or 
+        st.session_state.correlated_threats or 
+        st.session_state.logs):
+        # Don't pass processing_time for existing data display
+        update_dashboard_display(processing_time=0.0)
+
+# IMPORTANT: Call this function on every page load to maintain dashboard state
+# This ensures data persists when sidebar options change
+display_existing_data()
+
 # Add buttons to control monitoring
 col1, col2, col3 = st.columns(3)
 

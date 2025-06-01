@@ -1,38 +1,38 @@
 [
   {
-    "timestamp": "2025-06-01 18:31:17",
-    "source": "Antivirus",
-    "message": "Connection from IP 192.168.15.24 to port 445 (HTTP)",
+    "timestamp": "2025-06-01 19:08:06",
+    "source": "Network",
+    "message": "Firewall blocked connection from 192.168.127.81 to 10.0.0.132",
     "is_threat": false,
-    "threat_level": "Low",
+    "threat_level": "None",
     "threat_type": "Normal Activity",
-    "explanation": "LM Studio offline (Server error: 400). Basic pattern analysis used.",
-    "recommended_action": "Restore LM Studio connection for full AI analysis",
-    "confidence": "Low",
-    "analysis_time": "2025-06-01 18:31:22"
+    "explanation": "The firewall blocking the connection from 192.168.127.81 to 10.0.0.132 is a normal security measure, as it prevents unauthorized access from an internal IP address to a known internal server.",
+    "recommended_action": "Continue routine monitoring",
+    "confidence": "High",
+    "analysis_time": "2025-06-01 19:08:14"
   },
   {
-    "timestamp": "2025-06-01 18:31:17",
-    "source": "HIDS",
-    "message": "Connection from IP 192.168.38.98 to port 22 (SMB)",
-    "is_threat": false,
-    "threat_level": "Low",
-    "threat_type": "Normal Activity",
-    "explanation": "LM Studio offline (Server error: 404). Basic pattern analysis used.",
-    "recommended_action": "Restore LM Studio connection for full AI analysis",
-    "confidence": "Low",
-    "analysis_time": "2025-06-01 18:31:25"
+    "timestamp": "2025-06-01 19:08:06",
+    "source": "IDS",
+    "message": "Suspicious process powershell.exe started by user root",
+    "is_threat": true,
+    "threat_level": "High",
+    "threat_type": " PowerShell execution under root account indicating potential unauthorized access or malicious intent.",
+    "explanation": "The suspicious process 'powershell.exe' started by user 'root' could indicate an attempt to gain unauthorized system control, run malware, or execute malicious scripts. Root account access is typically granted for critical system operations, so its misuse here raises a high security concern.",
+    "recommended_action": "Immediate investigation into any known malicious activities running under root, stopping the process if possible, and escalating monitoring efforts.",
+    "confidence": "High",
+    "analysis_time": "2025-06-01 19:08:23"
   },
   {
-    "timestamp": "2025-06-01 18:31:17",
-    "source": "Authentication",
-    "message": "System file /etc/passwd blocked by user user",
-    "is_threat": false,
-    "threat_level": "Low",
-    "threat_type": "Normal Activity",
-    "explanation": "LM Studio offline (Server error: 404). Basic pattern analysis used.",
-    "recommended_action": "Restore LM Studio connection for full AI analysis",
-    "confidence": "Low",
-    "analysis_time": "2025-06-01 18:31:27"
+    "timestamp": "2025-06-01 19:08:06",
+    "source": "Network",
+    "message": "Unexpected privilege escalation for user user",
+    "is_threat": true,
+    "threat_level": "Medium",
+    "threat_type": "Privilege Escalation",
+    "explanation": "Privilege escalation can lead to unauthorized access, potential data breaches, or system compromise.",
+    "recommended_action": "Monitor for further privilege escalations and check for any unauthorized access or data breaches.",
+    "confidence": "Medium",
+    "analysis_time": "2025-06-01 19:08:31"
   }
 ]
