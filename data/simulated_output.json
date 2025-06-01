@@ -1,26 +1,38 @@
 [
   {
-    "timestamp": "2025-05-28 16:45:42",
-    "source": "Authentication",
-    "message": "Large data transfer (251MB) to external IP 192.168.87.150",
-    "is_threat": false,
-    "threat_level": "None",
-    "threat_type": "Normal Activity",
-    "explanation": "The activity is a normal data transfer within the internal network to an IP address that falls under our private network range. No signs of unauthorized access or malicious intent are present.",
-    "recommended_action": "Continue routine monitoring",
-    "confidence": "High",
-    "analysis_time": "2025-05-28 16:45:49"
-  },
-  {
-    "timestamp": "2025-05-28 16:45:42",
-    "source": "Network",
-    "message": "Malware detection: Keylogger found in /etc/config",
+    "timestamp": "2025-06-01 18:31:17",
+    "source": "Antivirus",
+    "message": "Connection from IP 192.168.15.24 to port 445 (HTTP)",
     "is_threat": false,
     "threat_level": "Low",
     "threat_type": "Normal Activity",
-    "explanation": "The detection of a keylogger in /etc/config is suspicious but not immediately threatening. Keyloggers are often found in such locations as part of legitimate system configurations, especially with SSH or other secure logins.",
-    "recommended_action": "Continue routine monitoring for potential unauthorized access or malware activity",
+    "explanation": "LM Studio offline (Server error: 400). Basic pattern analysis used.",
+    "recommended_action": "Restore LM Studio connection for full AI analysis",
     "confidence": "Low",
-    "analysis_time": "2025-05-28 16:45:55"
+    "analysis_time": "2025-06-01 18:31:22"
+  },
+  {
+    "timestamp": "2025-06-01 18:31:17",
+    "source": "HIDS",
+    "message": "Connection from IP 192.168.38.98 to port 22 (SMB)",
+    "is_threat": false,
+    "threat_level": "Low",
+    "threat_type": "Normal Activity",
+    "explanation": "LM Studio offline (Server error: 404). Basic pattern analysis used.",
+    "recommended_action": "Restore LM Studio connection for full AI analysis",
+    "confidence": "Low",
+    "analysis_time": "2025-06-01 18:31:25"
+  },
+  {
+    "timestamp": "2025-06-01 18:31:17",
+    "source": "Authentication",
+    "message": "System file /etc/passwd blocked by user user",
+    "is_threat": false,
+    "threat_level": "Low",
+    "threat_type": "Normal Activity",
+    "explanation": "LM Studio offline (Server error: 404). Basic pattern analysis used.",
+    "recommended_action": "Restore LM Studio connection for full AI analysis",
+    "confidence": "Low",
+    "analysis_time": "2025-06-01 18:31:27"
   }
 ]

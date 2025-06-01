@@ -153,8 +153,136 @@ if st.session_state.get('theme') == "Dark":
 class LMStudioAnalyzer:
     def __init__(self, api_url="http://localhost:1234/v1"):
         self.api_url = api_url
-        self.cache = {}  # Simple cache for recent analyses
+        self.cache = {}
+        self.connection_failures = 0  # Track consecutive failures
+        self.max_failures = 3  # Max failures before going offline
+        self.is_healthy = True  # Connection health status
         
+    def analyze_log(self, log_entry):
+        """Analyze a log entry with connection recovery"""
+        # Check cache first
+        if log_entry in self.cache:
+            return self.cache[log_entry]
+        
+        # If too many failures, return offline response
+        if self.connection_failures >= self.max_failures:
+            self.is_healthy = False
+            return {
+                "is_threat": False,
+                "threat_level": "Offline",
+                "threat_type": "System Offline",
+                "explanation": f"LM Studio disconnected after {self.connection_failures} failures. Using basic pattern matching.",
+                "recommended_action": "Reconnect to LM Studio for AI analysis",
+                "confidence": "Low"
+            }
+        
+        # Build prompt (your existing prompt code here)
+        prompt = f"""
+        Analyze the following security log entry to determine if it represents a security threat.
+        
+        Security log: {log_entry}
+        
+        Respond ONLY in the following JSON format:
+        {{
+          "is_threat": true/false,
+          "threat_level": "Critical/High/Medium/Low/None",
+          "threat_type": "Specific type or 'Normal Activity'",
+          "explanation": "Brief explanation",
+          "recommended_action": "Specific steps or 'Continue routine monitoring'",
+          "confidence": "High/Medium/Low"
+        }}
+        """
+        
+        try:
+            response = requests.post(
+                f"{self.api_url}/chat/completions",
+                headers={"Content-Type": "application/json"},
+                json={
+                    "model": "local-model",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.1
+                },
+                timeout=10  # Shorter timeout for faster failure detection
+            )
+            
+            if response.status_code == 200:
+                # Success! Reset failure counter
+                self.connection_failures = 0
+                self.is_healthy = True
+                
+                result = response.json()
+                answer = result['choices'][0]['message']['content']
+                
+                # JSON parsing (your existing code)
+                try:
+                    json_match = re.search(r'\{.*\}', answer, re.DOTALL)
+                    if json_match:
+                        json_str = json_match.group(0)
+                        result = json.loads(json_str)
+                    else:
+                        result = json.loads(answer)
+                    
+                    self.cache[log_entry] = result
+                    return result
+                    
+                except json.JSONDecodeError:
+                    return self._create_fallback_response(log_entry, "JSON parse error")
+            else:
+                # Server error
+                self.connection_failures += 1
+                return self._create_fallback_response(log_entry, f"Server error: {response.status_code}")
+                
+        except requests.exceptions.ConnectionError:
+            # Connection failed
+            self.connection_failures += 1
+            return self._create_fallback_response(log_entry, "Connection lost to LM Studio")
+            
+        except requests.exceptions.Timeout:
+            # Request timed out
+            self.connection_failures += 1
+            return self._create_fallback_response(log_entry, "Request timeout")
+            
+        except Exception as e:
+            # Any other error
+            self.connection_failures += 1
+            return self._create_fallback_response(log_entry, f"Unexpected error: {str(e)}")
+    
+    def _create_fallback_response(self, log_entry, error_msg):
+        """Create a fallback response when LM Studio is unavailable"""
+        # Basic pattern matching for common threats
+        log_lower = log_entry.lower()
+        
+        if any(word in log_lower for word in ['failed', 'error', 'unauthorized', 'denied']):
+            threat_level = "Medium"
+            is_threat = True
+            threat_type = "Potential Security Event"
+        elif any(word in log_lower for word in ['malware', 'virus', 'attack', 'breach']):
+            threat_level = "High" 
+            is_threat = True
+            threat_type = "Security Threat Detected"
+        else:
+            threat_level = "Low"
+            is_threat = False
+            threat_type = "Normal Activity"
+            
+        return {
+            "is_threat": is_threat,
+            "threat_level": threat_level,
+            "threat_type": threat_type,
+            "explanation": f"LM Studio offline ({error_msg}). Basic pattern analysis used.",
+            "recommended_action": "Restore LM Studio connection for full AI analysis",
+            "confidence": "Low"
+        }
+    
+    def get_health_status(self):
+        """Get current connection health"""
+        if self.connection_failures == 0:
+            return "🟢 Healthy", "Connected and functioning"
+        elif self.connection_failures < self.max_failures:
+            return "🟡 Degraded", f"{self.connection_failures} recent failures"
+        else:
+            return "🔴 Offline", f"Disconnected after {self.connection_failures} failures"
+            
     def test_connection(self):
         """Test the connection to LM Studio API"""
         try:
@@ -168,118 +296,6 @@ class LMStudioAnalyzer:
                 return False, f"Connection error: Status code {response.status_code}"
         except Exception as e:
             return False, f"Connection error: {str(e)}"
-    
-    def analyze_log(self, log_entry):
-        """Analyze a log entry using LM Studio API with caching"""
-        # Check cache first (simple exact match caching)
-        if log_entry in self.cache:
-            return self.cache[log_entry]
-            
-        prompt = f"""
-        Analyze the following security log entry to determine if it represents a security threat.
-        
-        Security log: {log_entry}
-        
-        Follow this structured analysis approach:
-        1. Evaluate the source and context of the activity
-        2. Compare against known threat patterns and signatures
-        3. Check for anomalous or unusual behavior
-        4. Assess potential impact if the activity is malicious
-        
-        Categorize the threat level as:
-        - Critical: Immediate action required, active compromise likely
-        - High: Urgent attention needed, high probability of malicious activity
-        - Medium: Suspicious activity that should be investigated
-        - Low: Possible concern but limited risk
-        - None: Normal or expected activity
-        
-        For ALL logs, including non-threats, provide complete information in your analysis.
-        
-        Respond ONLY in the following JSON format:
-        {{
-          "is_threat": true/false,
-          "threat_level": "Critical/High/Medium/Low/None",
-          "threat_type": "Specific type (e.g., brute force, SQL injection, unauthorized access) or 'Normal Activity' for non-threats",
-          "explanation": "Brief explanation of why this is or isn't a threat",
-          "recommended_action": "Specific steps to address this threat or 'Continue routine monitoring' for non-threats",
-          "confidence": "High/Medium/Low (indicating certainty in your assessment, not severity)"
-        }}
-        
-        Important guidelines:
-        - Even for non-threatening logs, always provide values for ALL fields
-        - For non-threats, use "Normal Activity" as the threat_type
-        - For non-threats, use "Continue routine monitoring" or similar as the recommended_action
-        - The confidence field should reflect your certainty in the classification, not the severity
-        - Keep explanations concise but informative
-        - Focus on actionable insights in your recommendations
-        """
-        
-        try:
-            response = requests.post(
-                f"{self.api_url}/chat/completions",
-                headers={"Content-Type": "application/json"},
-                json={
-                    "model": "local-model",
-                    "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.1
-                },
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                answer = result['choices'][0]['message']['content']
-                
-                # Try to extract JSON from the answer
-                try:
-                    # Find anything that looks like JSON in the answer
-                    json_match = re.search(r'\{.*\}', answer, re.DOTALL)
-                    if json_match:
-                        json_str = json_match.group(0)
-                        result = json.loads(json_str)
-                    else:
-                        # If no JSON found, parse the whole answer
-                        result = json.loads(answer)
-                        
-                    # Cache successful results
-                    self.cache[log_entry] = result
-                    
-                    # Limit cache size
-                    if len(self.cache) > 1000:
-                        # Remove oldest items
-                        for _ in range(100):
-                            self.cache.pop(next(iter(self.cache)), None)
-                            
-                    return result
-                except json.JSONDecodeError:
-                    # Handle case where model doesn't return valid JSON
-                    return {
-                        "is_threat": False,
-                        "threat_level": "Error",
-                        "threat_type": "Error",
-                        "explanation": "Failed to parse model response: " + answer[:100] + "...",
-                        "recommended_action": "Check model configuration",
-                        "confidence": "Low"
-                    }
-            else:
-                return {
-                    "is_threat": False,
-                    "threat_level": "Error",
-                    "threat_type": "Error",
-                    "explanation": f"API Error: {response.status_code}",
-                    "recommended_action": "Check LM Studio connection",
-                    "confidence": "Low"
-                }
-                
-        except Exception as e:
-            return {
-                "is_threat": False,
-                "threat_level": "Error",
-                "threat_type": "Error",
-                "explanation": f"Exception: {str(e)}",
-                "recommended_action": "Check network connection",
-                "confidence": "Low"
-            }
 
 # -------------------- Threat Correlation Engine --------------------
 class ThreatCorrelationEngine:
@@ -535,6 +551,16 @@ with st.sidebar:
         st.success("Connected to LM Studio")
     else:
         st.warning("Not connected to LM Studio")
+    
+    # Add connection status to sidebar
+    if st.session_state.lm_analyzer:
+        status_emoji, status_msg = st.session_state.lm_analyzer.get_health_status()
+        st.write(f"Status: {status_emoji} {status_msg}")
+        
+        if st.button("Reset Connection"):
+            st.session_state.lm_analyzer.connection_failures = 0
+            st.session_state.lm_analyzer.is_healthy = True
+            st.success("Connection status reset")
     
     st.header("Log Source Configuration")
     log_source_type = st.selectbox(
@@ -926,28 +952,28 @@ with col3:
 # Create placeholder for monitoring status
 monitoring_status = st.empty()
 
-# Enhanced continuous monitoring loop
+# Update monitoring section
 if st.session_state.monitoring:
     monitoring_placeholder = st.empty()
     
-    # Display initial monitoring status
-    monitoring_placeholder.info(f"Monitoring active - Next update in {refresh_rate} seconds...")
-    
-    # Process the first batch
     try:
+        # Show connection status
+        if st.session_state.lm_analyzer:
+            status_emoji, status_msg = st.session_state.lm_analyzer.get_health_status()
+            monitoring_placeholder.info(f"Monitoring active {status_emoji} - {status_msg} - Next update in {refresh_rate} seconds...")
+        else:
+            monitoring_placeholder.warning("Monitoring active - LM Studio not connected")
+        
+        # Process logs (with error handling)
         with st.spinner("Analyzing logs..."):
             analyze_and_update()
+            
     except Exception as e:
-        st.error(f"Error during monitoring: {str(e)}")
-        st.session_state.monitoring = False
+        # If monitoring fails, don't crash - just show error and continue
+        st.error(f"Monitoring error: {str(e)}")
+        st.warning("Monitoring will continue with next update...")
     
     # Schedule next update
-    next_update = datetime.now().timestamp() + refresh_rate
-    
-    # Add a note about auto-refresh
-    st.info("Dashboard will automatically refresh to show new data. If monitoring stops, click 'Start Monitoring' again.")
-    
-    # We'll use rerun in a moment
     time.sleep(1)
     st.rerun()
 
