@@ -327,6 +327,23 @@ class ThreatCorrelationEngine:
                 "indicators": ["malware", "virus", "trojan", "suspicious file", "unusual process"],
                 "threshold": 2,
                 "description": "Multiple malware-related events indicate active infection"
+            },
+            "ddos_attack": {
+                "indicators": [
+                    "flood", 
+                    "multiple connection", 
+                    "connection attempts",
+                    "bandwidth", 
+                    "overload",
+                    "exhausted",
+                    "timeout",
+                    "degraded",
+                    "botnet",
+                    "amplification",
+                    "spoofed"
+                ],
+                "threshold": 4,
+                "description": "Multiple indicators suggest a Distributed Denial of Service attack in progress"
             }
         }
     
@@ -448,38 +465,38 @@ class SampleLogSource(LogSource):
         return logs
 
 class FileLogSource(LogSource):
-    def __init__(self, file_path=None, last_position=0):
+    def __init__(self, file_path=None):
         self.file_path = file_path
-        self.last_position = last_position
+        self.file_processed = False  # Track if we've processed the file
         
     def get_logs(self, count=5):
-        """Get logs from a file"""
+        """Get logs from a file once"""
         logs = []
         
-        if not self.file_path or not os.path.exists(self.file_path):
+        # If we've already processed the file or it doesn't exist, return empty
+        if self.file_processed or not self.file_path or not os.path.exists(self.file_path):
             return logs
             
         try:
             with open(self.file_path, 'r') as f:
-                # Skip to last position
-                f.seek(self.last_position)
+                # Read all remaining lines in the file
+                lines = f.readlines()
                 
-                # Read new lines
-                for _ in range(count):
-                    line = f.readline().strip()
-                    if not line:
-                        break
-                        
-                    # Create log entry
-                    log_entry = {
-                        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        "source": "File",
-                        "message": line
-                    }
-                    logs.append(log_entry)
+                # Process each line
+                for line in lines:
+                    line = line.strip()
+                    if line:
+                        # Create log entry
+                        log_entry = {
+                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "source": "File",
+                            "message": line
+                        }
+                        logs.append(log_entry)
                 
-                # Remember position for next time
-                self.last_position = f.tell()
+                # Mark file as processed
+                self.file_processed = True
+                
         except Exception as e:
             st.error(f"Error reading log file: {str(e)}")
             
@@ -973,7 +990,13 @@ if st.session_state.monitoring:
         # Show connection status
         if st.session_state.lm_analyzer:
             status_emoji, status_msg = st.session_state.lm_analyzer.get_health_status()
-            monitoring_placeholder.info(f"Monitoring active {status_emoji} - {status_msg} - Next update in {refresh_rate} seconds...")
+            
+            # Check if we're using file source and it's been processed
+            if isinstance(st.session_state.log_source, FileLogSource) and st.session_state.log_source.file_processed:
+                monitoring_placeholder.success("✅ File analysis complete! You can now stop monitoring.")
+                st.session_state.monitoring = False  # Auto-stop monitoring
+            else:
+                monitoring_placeholder.info(f"Monitoring active {status_emoji} - {status_msg} - Next update in {refresh_rate} seconds...")
         else:
             monitoring_placeholder.warning("Monitoring active - LM Studio not connected")
         
@@ -986,9 +1009,11 @@ if st.session_state.monitoring:
         st.error(f"Monitoring error: {str(e)}")
         st.warning("Monitoring will continue with next update...")
     
-    # Schedule next update
-    time.sleep(1)
-    st.rerun()
+    # Only continue monitoring if we're not using a file source or file hasn't been processed
+    if (not isinstance(st.session_state.log_source, FileLogSource) or 
+        not st.session_state.log_source.file_processed):
+        time.sleep(1)
+        st.rerun()
 
 # Add explanatory information
 with st.expander("About this Dashboard"):
